@@ -1,10 +1,12 @@
 FROM ubuntu:22.04@sha256:a8fe6fd30333dc60fc5306982a7c51385c2091af1e0ee887166b40a905691fd0
 
-RUN apt-get update && apt-get install -y curl
+ARG KUBECTL_VERSION=1.22.15
+
+RUN apt-get update && apt-get install -y curl zip unzip ca-certificates curl wget apt-transport-https lsb-release gnupg
 
 # Create a folder
 RUN mkdir actions-runner
-WORKDIR actions-runner
+WORKDIR /actions-runner
 
 RUN GITHUB_RUNNER_VERSION="2.298.2" && \
     GITHUB_RUNNER_VERSION_SHA="0bfd792196ce0ec6f1c65d2a9ad00215b2926ef2c416b8d97615265194477117" && \
@@ -15,32 +17,61 @@ RUN GITHUB_RUNNER_VERSION="2.298.2" && \
 
 RUN	bash bin/installdependencies.sh
 
-# install zip, unip
+# install AWS cli from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+WORKDIR /tmp
 
-RUN apt-get -y install zip unzip
+RUN echo -n > awscli-pgp "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\
+\n\
+mQINBF2Cr7UBEADJZHcgusOJl7ENSyumXh85z0TRV0xJorM2B/JL0kHOyigQluUG\n\
+ZMLhENaG0bYatdrKP+3H91lvK050pXwnO/R7fB/FSTouki4ciIx5OuLlnJZIxSzx\n\
+PqGl0mkxImLNbGWoi6Lto0LYxqHN2iQtzlwTVmq9733zd3XfcXrZ3+LblHAgEt5G\n\
+TfNxEKJ8soPLyWmwDH6HWCnjZ/aIQRBTIQ05uVeEoYxSh6wOai7ss/KveoSNBbYz\n\
+gbdzoqI2Y8cgH2nbfgp3DSasaLZEdCSsIsK1u05CinE7k2qZ7KgKAUIcT/cR/grk\n\
+C6VwsnDU0OUCideXcQ8WeHutqvgZH1JgKDbznoIzeQHJD238GEu+eKhRHcz8/jeG\n\
+94zkcgJOz3KbZGYMiTh277Fvj9zzvZsbMBCedV1BTg3TqgvdX4bdkhf5cH+7NtWO\n\
+lrFj6UwAsGukBTAOxC0l/dnSmZhJ7Z1KmEWilro/gOrjtOxqRQutlIqG22TaqoPG\n\
+fYVN+en3Zwbt97kcgZDwqbuykNt64oZWc4XKCa3mprEGC3IbJTBFqglXmZ7l9ywG\n\
+EEUJYOlb2XrSuPWml39beWdKM8kzr1OjnlOm6+lpTRCBfo0wa9F8YZRhHPAkwKkX\n\
+XDeOGpWRj4ohOx0d2GWkyV5xyN14p2tQOCdOODmz80yUTgRpPVQUtOEhXQARAQAB\n\
+tCFBV1MgQ0xJIFRlYW0gPGF3cy1jbGlAYW1hem9uLmNvbT6JAlQEEwEIAD4WIQT7\n\
+Xbd/1cEYuAURraimMQrMRnJHXAUCXYKvtQIbAwUJB4TOAAULCQgHAgYVCgkICwIE\n\
+FgIDAQIeAQIXgAAKCRCmMQrMRnJHXJIXEAChLUIkg80uPUkGjE3jejvQSA1aWuAM\n\
+yzy6fdpdlRUz6M6nmsUhOExjVIvibEJpzK5mhuSZ4lb0vJ2ZUPgCv4zs2nBd7BGJ\n\
+MxKiWgBReGvTdqZ0SzyYH4PYCJSE732x/Fw9hfnh1dMTXNcrQXzwOmmFNNegG0Ox\n\
+au+VnpcR5Kz3smiTrIwZbRudo1ijhCYPQ7t5CMp9kjC6bObvy1hSIg2xNbMAN/Do\n\
+ikebAl36uA6Y/Uczjj3GxZW4ZWeFirMidKbtqvUz2y0UFszobjiBSqZZHCreC34B\n\
+hw9bFNpuWC/0SrXgohdsc6vK50pDGdV5kM2qo9tMQ/izsAwTh/d/GzZv8H4lV9eO\n\
+tEis+EpR497PaxKKh9tJf0N6Q1YLRHof5xePZtOIlS3gfvsH5hXA3HJ9yIxb8T0H\n\
+QYmVr3aIUes20i6meI3fuV36VFupwfrTKaL7VXnsrK2fq5cRvyJLNzXucg0WAjPF\n\
+RrAGLzY7nP1xeg1a0aeP+pdsqjqlPJom8OCWc1+6DWbg0jsC74WoesAqgBItODMB\n\
+rsal1y/q+bPzpsnWjzHV8+1/EtZmSc8ZUGSJOPkfC7hObnfkl18h+1QtKTjZme4d\n\
+H17gsBJr+opwJw/Zio2LMjQBOqlm3K1A4zFTh7wBC7He6KPQea1p2XAMgtvATtNe\n\
+YLZATHZKTJyiqA==\n\
+=vYOk\n\
+-----END PGP PUBLIC KEY BLOCK-----"
 
-# install az cli from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions
+RUN gpg --import awscli-pgp
 
-RUN apt-get -y install ca-certificates curl wget apt-transport-https lsb-release gnupg
+RUN curl -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+RUN curl -o awscliv2.sig "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig"
 
-RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
-    AZ_REPO=$(lsb_release -cs) && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+RUN gpg --verify awscliv2.sig awscliv2.zip
 
-RUN apt-get update && apt-get -y install azure-cli
+RUN unzip -q awscliv2.zip && ./aws/install
+RUN rm -rf "aws*"
 
-RUN az config set extension.use_dynamic_install=yes_without_prompt
 
-# install python-pip
+# install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-on-linux
 
-RUN apt-get -y install python-pip
+RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256
+RUN ls -l
+RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+RUN mv kubectl /usr/local/bin/
 
-# install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+# install kustomize from https://kubectl.docs.kubernetes.io/installation/kustomize/binaries
 
-RUN curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
-    
-RUN apt-get update && apt-get -y install kubectl
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
 # install helm from https://helm.sh/docs/intro/install/#from-apt-debianubuntu
 
@@ -49,17 +80,6 @@ RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
 
 RUN apt-get update && apt-get -y install helm
 
-# install jq from https://stedolan.github.io/jq/download/
-
-RUN apt-get update && apt-get -y install jq
-
-# install yq from https://github.com/mikefarah/yq#install
-
-RUN YQ_VERSION="v4.28.2" && \
-    YQ_BINARY="yq_linux_amd64" && \
-    wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz -O - | tar xz && mv ${YQ_BINARY} /usr/bin/yq
-
-####
 
 RUN useradd github && \
     mkdir -p /home/github && \
@@ -72,11 +92,4 @@ RUN chmod +x /entrypoint.sh
 USER github
 
 WORKDIR /
-
-RUN whoami && \
-    az --version && \
-    kubectl --help && \
-    helm --help && \
-    yq --version
-
 ENTRYPOINT ["/entrypoint.sh"]
