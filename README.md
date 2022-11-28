@@ -1,1 +1,1 @@
-# interop-github-self-hosted-runner-aws
+# interop-github-runner-aws
