@@ -65,7 +65,6 @@ RUN rm -rf "aws*"
 
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256
-RUN ls -l
 RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 RUN mv kubectl /usr/local/bin/
 
