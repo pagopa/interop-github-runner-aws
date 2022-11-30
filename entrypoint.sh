@@ -35,13 +35,17 @@ if [ "$(echo $REPLACE_EXISTING_RUNNER | tr '[:upper:]' '[:lower:]')" == "true" ]
 	REPLACEMENT_POLICY_LABEL="TRUE"
 fi
 
+ECS_TASK_ID=$(curl -s "${ECS_CONTAINER_METADATA_URI_V4}/task" \
+  | jq -r ".TaskARN" \
+  | cut -d "/" -f 3)
+
 # Configure runner interactively, or with the given replacement policy.
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | ./actions-runner/config.sh --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	echo -ne "$REPLACEMENT_POLICY" | ./actions-runner/config.sh --name $ECS_TASK_ID --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
 else
-	./actions-runner/config.sh --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	./actions-runner/config.sh --name $ECS_TASK_ID --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
 fi
 
 # Start the runner.
