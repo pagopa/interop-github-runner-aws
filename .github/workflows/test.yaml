@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Start GitHub Runner
         id: start_runner
-        uses: pagopa/interop-github-runner-create-action@main
+        uses: pagopa/interop-github-runner-aws-create-action@main
         with:
           aws_region: eu-central-1
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
