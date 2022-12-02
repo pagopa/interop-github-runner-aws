@@ -2,14 +2,13 @@ name: Test self-hosted runner
 
 on: workflow_dispatch
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
     outputs:
       runner_name: ${{ steps.start_runner.outputs.runner_name }}
 
