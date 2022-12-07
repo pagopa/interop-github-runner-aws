@@ -43,6 +43,7 @@ jobs:
   delete_runner:
     name: Delete Self-Hosted Runner
     needs: [create_runner, test_job]
+    if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: dev
 
