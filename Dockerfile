@@ -60,17 +60,12 @@ RUN gpg --verify awscliv2.sig awscliv2.zip
 RUN unzip -q awscliv2.zip && ./aws/install
 RUN rm -rf "aws*"
 
-
 # install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-on-linux
 
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256
 RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-RUN mv kubectl /usr/local/bin/
-
-# install kustomize from https://kubectl.docs.kubernetes.io/installation/kustomize/binaries
-
-RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+RUN mv kubectl /usr/local/bin/ && chmod +x /usr/local/bin/kubectl
 
 # install helm from https://helm.sh/docs/intro/install/#from-apt-debianubuntu
 
@@ -82,8 +77,7 @@ RUN apt-get update && apt-get -y install helm
 RUN useradd github && \
     mkdir -p /home/github && \
     chown -R github:github /home/github && \
-    chown -R github:github /actions-runner && \
-    chown -R github:github /usr/local/
+    chown -R github:github /actions-runner
 
 WORKDIR /home/github
 
