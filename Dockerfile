@@ -79,16 +79,16 @@ RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
 
 RUN apt-get update && apt-get -y install helm
 
-
 RUN useradd github && \
     mkdir -p /home/github && \
     chown -R github:github /home/github && \
-    chown -R github:github /actions-runner
+    chown -R github:github /actions-runner && \
+    chown -R github:github /usr/local/
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+WORKDIR /home/github
+
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 USER github
-
-WORKDIR /
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/home/github/entrypoint.sh"]
