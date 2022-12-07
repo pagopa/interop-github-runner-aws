@@ -74,6 +74,11 @@ RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
 
 RUN apt-get update && apt-get -y install helm
 
+# install mongosh from https://www.mongodb.com/try/download/shell
+
+RUN curl -O https://downloads.mongodb.com/compass/mongodb-mongosh_1.6.1_amd64.deb
+RUN apt-get install -y ./mongodb-mongosh_1.6.1_amd64.deb
+
 RUN useradd github && \
     mkdir -p /home/github && \
     chown -R github:github /home/github && \
