@@ -38,7 +38,7 @@ jobs:
       - name: 'Test kubectl'
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-          # kubectl get pods -n dev
+          kubectl get pods -n dev
 
   delete_runner:
     name: Delete Self-Hosted Runner
