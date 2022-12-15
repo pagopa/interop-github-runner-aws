@@ -10,9 +10,11 @@ jobs:
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        index: [1, 2]
+      fail-fast: true
     environment: dev
-    outputs:
-      runner_name: ${{ steps.start_runner.outputs.runner_name }}
 
     steps:
       - name: Start GitHub Runner
@@ -31,7 +33,7 @@ jobs:
   test_job:
     name: Test Job
     needs: create_runner
-    runs-on: [self-hosted, "${{ needs.create_runner.outputs.runner_name }}"]
+    runs-on: [self-hosted, "run_id:${{ github.run_id }}"]
     environment: dev
 
     steps:
@@ -43,6 +45,10 @@ jobs:
   delete_runner:
     name: Delete Self-Hosted Runner
     needs: [create_runner, test_job]
+    strategy:
+      matrix:
+        index: [1, 2]
+      fail-fast: true
     if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: dev
@@ -55,6 +61,5 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
-          runner_name: ${{ needs.create_runner.outputs.runner_name }}
           pat_token: ${{ secrets.BOT_TOKEN }}
 
