@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Repository tag to checkout (e.g. "v.1.9.0")'
+        description: 'Repository tag to checkout (e.g. "v1.9.0")'
         type: string
         required: true
 
