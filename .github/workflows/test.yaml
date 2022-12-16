@@ -1,6 +1,12 @@
 name: Test self-hosted runner
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Repository tag to checkout (e.g. "v.1.9.0")'
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -37,6 +43,14 @@ jobs:
     environment: dev
 
     steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag }}
+          persist-credentials: false
+
       - name: 'Test kubectl'
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
