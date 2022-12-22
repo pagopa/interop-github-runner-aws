@@ -1,11 +1,17 @@
 name: Test image retagging
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      current_tag:
+        description: Current tag
+        required: true
+        type: string
+
 
 jobs:
   retag_image:
     name: Retag Image
-    if: ${{ github.ref_type == "tag" }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -21,7 +27,7 @@ jobs:
         run: |
           set -euxo pipefail
 
-          docker pull "ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+          docker pull "ghcr.io/${{ github.repository }}:${{ inputs.current_tag }}"
 
 
       - name: Retag And Push Image
@@ -29,7 +35,7 @@ jobs:
         run: |
           set -euxo pipefail
 
-          CURRENT_IMAGE_URI="ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+          CURRENT_IMAGE_URI="ghcr.io/${{ github.repository }}:${{ inputs.current_tag }}"
           NEW_IMAGE_URI="${CURRENT_IMAGE_URI}-retagged"
 
           docker tag "$CURRENT_IMAGE_URI" "$NEW_IMAGE_URI"
