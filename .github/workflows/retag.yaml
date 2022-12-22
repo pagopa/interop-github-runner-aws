@@ -36,7 +36,7 @@ jobs:
           set -euxo pipefail
 
           CURRENT_IMAGE_URI="ghcr.io/${{ github.repository }}:${{ inputs.current_tag }}"
-          NEW_IMAGE_URI="${CURRENT_IMAGE_URI}-retagged"
+          NEW_IMAGE_URI="ghcr.io/${{ github.repository }}:v1.3.1"
 
           docker tag "$CURRENT_IMAGE_URI" "$NEW_IMAGE_URI"
           docker push "$NEW_IMAGE_URI"
