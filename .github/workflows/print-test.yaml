@@ -12,6 +12,7 @@ jobs:
   print_inputs:
     name: Print Inputs
     runs-on: ubuntu-22.04
+    environment: dev
 
     steps:
       - name: Summary
@@ -19,6 +20,7 @@ jobs:
         run: |
           echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- print secret? `${{ secrets.AWS_REGION }}`" >> $GITHUB_STEP_SUMMARY
 
 
 
