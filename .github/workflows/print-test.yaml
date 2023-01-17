@@ -1,0 +1,28 @@
+name: Test print inputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        required: true
+        type: environment
+
+jobs:
+  print_inputs:
+    name: Print Inputs
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Summary
+        id: summary
+        run: |
+          echo "- environment: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ref: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+
+
+
+
+
+
+
