@@ -80,9 +80,13 @@ RUN curl -O https://downloads.mongodb.com/compass/mongodb-mongosh_1.6.1_amd64.de
 RUN apt-get install -y ./mongodb-mongosh_1.6.1_amd64.deb
 RUN rm ./mongodb-mongosh_1.6.1_amd64.deb
 
-# install NVM (Node Version Manager) and NodeJS
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-RUN nvm install 18
+# install NodeJS 18-x
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN apt-get update
+RUN apt-get install nodejs -y
+RUN node -v
 
 RUN useradd github && \
     mkdir -p /home/github && \
@@ -95,4 +99,5 @@ COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
 USER github
+
 ENTRYPOINT ["/home/github/entrypoint.sh"]
