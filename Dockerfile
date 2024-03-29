@@ -80,6 +80,10 @@ RUN curl -O https://downloads.mongodb.com/compass/mongodb-mongosh_1.6.1_amd64.de
 RUN apt-get install -y ./mongodb-mongosh_1.6.1_amd64.deb
 RUN rm ./mongodb-mongosh_1.6.1_amd64.deb
 
+# install NVM (Node Version Manager) and NodeJS
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+RUN nvm install 18
+
 RUN useradd github && \
     mkdir -p /home/github && \
     chown -R github:github /home/github && \
