@@ -43,9 +43,15 @@ printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace E
 if [ "$INTERACTIVE" == "FALSE" ]; then
 	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
 else
-	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --agent $RUNNER_NAME --work $WORK_DIR 
 fi
 
 # Start the runner.
 printf "Executing GitHub Runner for $GITHUB_REPOSITORY\n"
+
+if [[ -n $ECS_TASK_MAX_DURATION_SECONDS ]]; then
+	echo "This task will stop after ${ECS_TASK_MAX_DURATION_SECONDS} seconds"
+	. /home/github/killProcess.sh "run.sh" &
+fi
+
 . /actions-runner/run.sh

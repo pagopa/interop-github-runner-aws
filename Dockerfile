@@ -95,6 +95,9 @@ RUN useradd github && \
 
 WORKDIR /home/github
 
+COPY killProcess.sh ./killProcess.sh
+RUN chmod +x ./killProcess.sh
+
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
