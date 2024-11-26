@@ -88,6 +88,11 @@ RUN apt-get update
 RUN apt-get install nodejs -y
 RUN node -v
 
+# Install yq
+RUN curl -L https://github.com/mikefarah/yq/releases/download/v4.35.2/yq_linux_amd64 -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+# Verify yq installation
+RUN yq --version
+
 RUN useradd github && \
     mkdir -p /home/github && \
     chown -R github:github /home/github && \
