@@ -8,7 +8,7 @@ if [ "$(echo $INTERACTIVE_MODE | tr '[:upper:]' '[:lower:]')" == "true" ]; then
 fi
 
 # Verify some Repo URL and token have been given, otherwise we must be interactive mode.
-if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ]]; then
+if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ]; then
 	if [ "$INTERACTIVE" == "FALSE" ]; then
 		echo "GITHUB_REPOSITORY_URL, GITHUB_PAT and GITHUB_REPOSITORY_NAME cannot be empty"
 		exit 1
