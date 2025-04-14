@@ -42,6 +42,7 @@ fi
 echo "Requesting registration token..."
 
 REGISTRATION_TOKEN=$(curl -s \
+  -http1.1 \
   -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer ${GITHUB_PAT}" \
