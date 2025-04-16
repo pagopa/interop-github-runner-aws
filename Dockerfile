@@ -1,21 +1,13 @@
-FROM ubuntu:22.04@sha256:a8fe6fd30333dc60fc5306982a7c51385c2091af1e0ee887166b40a905691fd0
+# runner v2.323.0: https://github.com/actions/runner/pkgs/container/actions-runner
+FROM ghcr.io/actions/actions-runner:2.323.0
 
 ARG KUBECTL_VERSION=1.25.16
 
-RUN apt-get update && apt-get install -y curl zip unzip jq ca-certificates curl wget apt-transport-https lsb-release gnupg git gettext-base
+USER root
 
-# Create a folder
-RUN mkdir actions-runner
-WORKDIR /actions-runner
+# Already installed in base image: curl, jq1.6, git 2.49.0
+RUN apt-get update && apt-get install -y zip unzip ca-certificates wget apt-transport-https lsb-release gnupg gettext-base 
 
-RUN GITHUB_RUNNER_VERSION="2.314.1" && \
-    GITHUB_RUNNER_VERSION_SHA="6c726a118bbe02cd32e222f890e1e476567bf299353a96886ba75b423c1137b5" && \
-    curl -o actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz && \
-    echo "${GITHUB_RUNNER_VERSION_SHA}  actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz" | sha256sum -c && \
-    tar xzf ./actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz && \
-    rm actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz
-
-RUN	bash bin/installdependencies.sh
 
 # install AWS cli from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 WORKDIR /tmp
@@ -59,26 +51,27 @@ RUN gpg --verify awscliv2.sig awscliv2.zip
 
 RUN unzip -q awscliv2.zip && ./aws/install
 RUN rm -rf "aws*"
+RUN aws --version
 
 # install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-on-linux
-
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256
 RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 RUN mv kubectl /usr/local/bin/ && chmod +x /usr/local/bin/kubectl
+RUN kubectl version --output=yaml --client
 
 # install helm from https://helm.sh/docs/intro/install/#from-apt-debianubuntu
-
 RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
     echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
 
-RUN apt-get update && apt-get -y install helm
+RUN apt-get update && apt list helm && apt-get -y install helm=3.17.2-1
+RUN helm version
 
 # install mongosh from https://www.mongodb.com/try/download/shell
-
 RUN curl -O https://downloads.mongodb.com/compass/mongodb-mongosh_1.6.1_amd64.deb
 RUN apt-get install -y ./mongodb-mongosh_1.6.1_amd64.deb
 RUN rm ./mongodb-mongosh_1.6.1_amd64.deb
+RUN mongosh --version
 
 # install NodeJS 18-x
 RUN mkdir -p /etc/apt/keyrings
@@ -90,22 +83,21 @@ RUN node -v
 
 # Install yq
 RUN curl -L https://github.com/mikefarah/yq/releases/download/v4.35.2/yq_linux_amd64 -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-# Verify yq installation
 RUN yq --version
 
-RUN useradd github && \
-    mkdir -p /home/github && \
-    chown -R github:github /home/github && \
-    chown -R github:github /actions-runner
+# container home is /home/runner
+# "runner" user is created in base image, has permissions on container home
+# "docker" group is created in base image
+#RUN useradd github && \
+#    mkdir -p /home/github && \
+#    chown -R github:github /home/github && \
+#    chown -R github:github /actions-runner
 
-WORKDIR /home/github
-
-COPY killProcess.sh ./killProcess.sh
-RUN chmod +x ./killProcess.sh
+WORKDIR /home/runner
 
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
-USER github
+USER runner
 
 ENTRYPOINT ["/home/github/entrypoint.sh"]
