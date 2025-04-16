@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
 INTERACTIVE="FALSE"
 if [ "$(echo $INTERACTIVE_MODE | tr '[:upper:]' '[:lower:]')" == "true" ]; then
 	INTERACTIVE="TRUE"
@@ -52,17 +50,12 @@ REGISTRATION_TOKEN=$(curl -s \
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	echo -ne "$REPLACEMENT_POLICY" | . $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
 else
-	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR 
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR 
 fi
 
 # Start the runner.
 printf "Executing GitHub Runner for $GITHUB_REPOSITORY_NAME\n"
 
-if [[ -n $ECS_TASK_MAX_DURATION_SECONDS ]]; then
-	echo "This task will stop after ${ECS_TASK_MAX_DURATION_SECONDS} seconds"
-	. /home/github/killProcess.sh "/actions-runner/run.sh" &
-fi
-
-bash /actions-runner/run.sh
+bash $HOME/run.sh
