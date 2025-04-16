@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
 INTERACTIVE="FALSE"
 if [ "$(echo $INTERACTIVE_MODE | tr '[:upper:]' '[:lower:]')" == "true" ]; then
 	INTERACTIVE="TRUE"
@@ -28,7 +26,7 @@ if [ -z "$RUNNER_NAME" ]; then
 fi
 
 if [ -z "$WORK_DIR" ]; then
-	export WORK_DIR=".workdir"
+	export WORK_DIR="$HOME/.workdir"
 fi
 
 # Calculate runner replacement policy.
@@ -52,9 +50,9 @@ REGISTRATION_TOKEN=$(curl -s \
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR
 else
-	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR 
+	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR
 fi
 
 # Start the runner.
