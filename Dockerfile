@@ -88,11 +88,6 @@ RUN yq --version
 # container home is /home/runner
 # "runner" user is created in base image, has permissions on container home
 # "docker" group is created in base image
-#RUN useradd github && \
-#    mkdir -p /home/github && \
-#    chown -R github:github /home/github && \
-#    chown -R github:github /actions-runner
-
 WORKDIR /home/runner
 
 COPY entrypoint.sh ./entrypoint.sh
