@@ -100,4 +100,4 @@ RUN chmod +x ./entrypoint.sh
 
 USER runner
 
-ENTRYPOINT ["/home/github/entrypoint.sh"]
+ENTRYPOINT ["/home/runner/entrypoint.sh"]
