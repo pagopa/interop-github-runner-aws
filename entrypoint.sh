@@ -6,9 +6,9 @@ if [ "$(echo $INTERACTIVE_MODE | tr '[:upper:]' '[:lower:]')" == "true" ]; then
 fi
 
 # Verify some Repo URL and token have been given, otherwise we must be interactive mode.
-if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ]; then
+if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ] || [ -z "$RUNNER_NAME" ]; then
 	if [ "$INTERACTIVE" == "FALSE" ]; then
-		echo "GITHUB_REPOSITORY_URL, GITHUB_PAT and GITHUB_REPOSITORY_NAME cannot be empty"
+		echo "GITHUB_REPOSITORY_URL, GITHUB_PAT, GITHUB_REPOSITORY_NAME and RUNNER_NAME cannot be empty"
 		exit 1
 	fi
 fi
@@ -17,12 +17,6 @@ fi
 GITHUB_REPOSITORY_BANNER="$GITHUB_REPOSITORY_URL"
 if [ -z "$GITHUB_REPOSITORY_BANNER" ]; then
 	export GITHUB_REPOSITORY_BANNER="<empty repository url>"
-fi
-
-if [ -z "$RUNNER_NAME" ]; then
-	export RUNNER_NAME="$(curl -s "${ECS_CONTAINER_METADATA_URI_V4}/task" \
-    | jq -r '.TaskARN' \
-    | cut -d "/" -f 3)"
 fi
 
 if [ -z "$WORK_DIR" ]; then
@@ -50,9 +44,9 @@ REGISTRATION_TOKEN=$(curl -s \
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | . $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR
+	echo -ne "$REPLACEMENT_POLICY" | . $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR
 else
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --agent $RUNNER_NAME --work $WORK_DIR 
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR 
 fi
 
 # Start the runner.
