@@ -28,14 +28,13 @@ if [[ -n "${RUNNER_LABELS:-}" ]]; then
         exit 1
     fi
 
-    ADDITIONAL_ARGS="--no-default-labels --labels ${RUNNER_LABELS}"
+    ADDITIONAL_ARGS="$ADDITIONAL_ARGS --no-default-labels --labels ${RUNNER_LABELS} "
 fi
 
 if [[ -n "${REPLACE_EXISTING_RUNNER_NAME:-}" ]]; then
     case "$REPLACE_EXISTING_RUNNER_NAME" in
     true)
-		REPLACE_EXISTING_RUNNER_NAME='True'
-        ADDITIONAL_ARGS=" --replace "
+		ADDITIONAL_ARGS="$ADDITIONAL_ARGS --replace"
         ;;
     *)
         echo "Error: REPLACE_EXISTING_RUNNER_NAME must be 'true' or 'false' if set, got: '$REPLACE_EXISTING_RUNNER_NAME'"
@@ -64,8 +63,7 @@ REGISTRATION_TOKEN=$(curl -s \
   -H "Authorization: Bearer ${GITHUB_PAT}" \
   https://api.github.com/repos/${GITHUB_REPOSITORY_NAME}/actions/runners/registration-token | jq ".token" -r)
 
-printf "Got token $REGISTRATION_TOKEN\n"
-# Configure runner interactively, or with the given replacement policy.
+
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tAdditional args: $ADDITIONAL_ARGS\n"
 
