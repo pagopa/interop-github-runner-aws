@@ -13,23 +13,47 @@ if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPO
 	fi
 fi
 
+ADDITIONAL_ARGS=""
+
+if [[ -n "${RUNNER_LABELS:-}" ]]; then
+	# Must not start or end with a comma
+    if [[ "$RUNNER_LABELS" == ,* || "$RUNNER_LABELS" == *, ]]; then
+        echo "Error: RUNNER_LABELS must not start or end with a comma"
+        exit 1
+    fi
+
+    # Must not contain any whitespace
+    if [[ "$RUNNER_LABELS" =~ [[:space:]] ]]; then
+        echo "Error: RUNNER_LABELS must not contain spaces"
+        exit 1
+    fi
+
+    ADDITIONAL_ARGS="--no-default-labels --labels ${RUNNER_LABELS}"
+fi
+
+if [[ -n "${REPLACE_EXISTING_RUNNER_NAME:-}" ]]; then
+    case "$REPLACE_EXISTING_RUNNER_NAME" in
+    true)
+		REPLACE_EXISTING_RUNNER_NAME='True'
+        ADDITIONAL_ARGS=" --replace "
+        ;;
+    *)
+        echo "Error: REPLACE_EXISTING_RUNNER_NAME must be 'true' or 'false' if set, got: '$REPLACE_EXISTING_RUNNER_NAME'"
+        exit 1
+        ;;
+    esac
+fi
+
+if [[ -n "${WORK_DIR:-}" ]]; then
+	ADDITIONAL_ARGS="$ADDITIONAL_ARGS --work $WORK_DIR"
+fi
+
 # Calculate default configuration values.
 GITHUB_REPOSITORY_BANNER="$GITHUB_REPOSITORY_URL"
 if [ -z "$GITHUB_REPOSITORY_BANNER" ]; then
 	export GITHUB_REPOSITORY_BANNER="<empty repository url>"
 fi
 
-if [ -z "$WORK_DIR" ]; then
-	export WORK_DIR=".workdir"
-fi
-
-# Calculate runner replacement policy.
-REPLACEMENT_POLICY="\n\n\n"
-REPLACEMENT_POLICY_LABEL="FALSE"
-if [ "$(echo $REPLACE_EXISTING_RUNNER | tr '[:upper:]' '[:lower:]')" == "true" ]; then
-	REPLACEMENT_POLICY="Y\n\n"
-	REPLACEMENT_POLICY_LABEL="TRUE"
-fi
 
 echo "Requesting registration token..."
 
@@ -40,13 +64,16 @@ REGISTRATION_TOKEN=$(curl -s \
   -H "Authorization: Bearer ${GITHUB_PAT}" \
   https://api.github.com/repos/${GITHUB_REPOSITORY_NAME}/actions/runners/registration-token | jq ".token" -r)
 
+printf "Got token $REGISTRATION_TOKEN\n"
 # Configure runner interactively, or with the given replacement policy.
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
-printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
+printf "\tRunner Name: $RUNNER_NAME\n\tAdditional args: $ADDITIONAL_ARGS\n"
+
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | . $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR
+	printf "Running in non-interactive mode\n"
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --unattended
 else
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN --work $WORK_DIR 
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS
 fi
 
 # Start the runner.
