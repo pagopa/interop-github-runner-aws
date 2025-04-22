@@ -1,0 +1,19 @@
+# runner v2.323.0: https://github.com/actions/runner/pkgs/container/actions-runner
+FROM ghcr.io/actions/actions-runner@sha256:831a2607a2618e4b79d9323b4c72330f3861768a061c2b92a845e9d214d80e5b
+
+USER root
+
+# Already installed in base image: curl, jq1.6, git 2.49.0
+RUN apt-get update && apt-get install -y zip unzip ca-certificates wget apt-transport-https lsb-release gnupg gettext-base 
+
+# container home is /home/runner
+# "runner" user is created in base image, has permissions on container home
+# "docker" group is created in base image
+WORKDIR /home/runner
+
+COPY ./scripts/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+USER runner
+
+ENTRYPOINT ["/home/runner/entrypoint.sh"]
