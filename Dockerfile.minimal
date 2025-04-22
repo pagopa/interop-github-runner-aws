@@ -13,7 +13,7 @@ WORKDIR /home/runner
 
 USER runner
 
-COPY --chown=runner:docker ./scripts/entrypoint.sh ./entrypoint.sh
+COPY --chown=runner: ./scripts/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
 ENTRYPOINT ["/home/runner/entrypoint.sh"]
