@@ -90,9 +90,9 @@ RUN yq --version
 # "docker" group is created in base image
 WORKDIR /home/runner
 
-COPY ./scripts/entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-
 USER runner
+
+COPY --chown=runner:docker ./scripts/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 ENTRYPOINT ["/home/runner/entrypoint.sh"]
