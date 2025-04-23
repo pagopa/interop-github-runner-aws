@@ -100,7 +100,7 @@ jobs:
       
       - name: Create GitHub Release
         if: steps.release.outputs.new_release_published == 'true'
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
         with:
           tag_name: v${{ steps.release.outputs.new_release_version }}
           name: Release v${{ steps.release.outputs.new_release_version }}
