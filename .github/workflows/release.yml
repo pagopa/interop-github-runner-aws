@@ -44,12 +44,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Fail if no new release was published
-        if: steps.release.outputs.new_release_published == 'false'
-        run: |
-          echo "No new release was published. Failing the workflow."
-          exit 1
-
       - name: Log in to the Container registry
         id: docker_login
         if: steps.release.outputs.new_release_published == 'true'
