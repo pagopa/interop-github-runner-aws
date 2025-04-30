@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-INTERACTIVE="FALSE"
-
-# Verify some Repo URL and token have been given, otherwise we must be interactive mode.
+# Verify some Repo name and token have been given
 if [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ]; then
     echo "GITHUB_PAT and GITHUB_REPOSITORY_NAME cannot be empty"
     exit 1
