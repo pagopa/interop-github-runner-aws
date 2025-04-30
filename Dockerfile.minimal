@@ -14,6 +14,9 @@ WORKDIR /home/runner
 USER runner
 
 COPY --chown=runner: ./scripts/entrypoint.sh ./entrypoint.sh
+COPY --chown=runner: ./scripts/removeRunner.sh ./removeRunner.sh
+
 RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./removeRunner.sh
 
 ENTRYPOINT ["/home/runner/entrypoint.sh"]
