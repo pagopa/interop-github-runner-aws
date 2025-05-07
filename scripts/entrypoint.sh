@@ -5,7 +5,6 @@ if [ "$(echo $INTERACTIVE_MODE | tr '[:upper:]' '[:lower:]')" == "true" ]; then
 	INTERACTIVE="TRUE"
 fi
 
-# Verify some Repo URL and token have been given, otherwise we must be interactive mode.
 if [ -z "$GITHUB_REPOSITORY_URL" ] || [ -z "$GITHUB_PAT" ] || [ -z "$GITHUB_REPOSITORY_NAME" ] || [ -z "$RUNNER_NAME" ]; then
 	if [ "$INTERACTIVE" == "FALSE" ]; then
 		echo "GITHUB_REPOSITORY_URL, GITHUB_PAT, GITHUB_REPOSITORY_NAME and RUNNER_NAME cannot be empty"
@@ -77,4 +76,4 @@ fi
 # Start the runner.
 printf "Executing GitHub Runner for $GITHUB_REPOSITORY_NAME\n"
 
-bash $HOME/run.sh
+GITHUB_PAT="" bash $HOME/run.sh
