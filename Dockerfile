@@ -68,11 +68,11 @@ RUN echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 RUN mv kubectl /usr/local/bin/ && chmod +x /usr/local/bin/kubectl
 
 # install helm from https://helm.sh/docs/intro/install/#from-apt-debianubuntu
-
 RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
     echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
 
-RUN apt-get update && apt-get -y install helm
+RUN apt-get update && apt list helm && apt-get -y install helm=3.17.2-1
+RUN helm version
 
 # install mongosh from https://www.mongodb.com/try/download/shell
 
