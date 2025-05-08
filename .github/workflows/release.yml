@@ -14,9 +14,6 @@ concurrency:
   group: 'release'
   cancel-in-progress: false
 
-permissions:
-  contents: write
-
 jobs:
   release:
     name: Release
@@ -31,7 +28,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Release
+      - name: Release (dry-run)
         id: release
         # from https://github.com/cycjimmy/semantic-release-action/commits/main
         uses: cycjimmy/semantic-release-action@0a51e81a6baff2acad3ee88f4121c589c73d0f0e # v4.2.0
@@ -85,22 +82,13 @@ jobs:
           labels: |
             maintainer=https://pagopa.it
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
-
-      - name: Create Git Tag
-        if: steps.release.outputs.new_release_published == 'true'
-        run: |
-          git tag v${{ steps.release.outputs.new_release_version }}
-          git push origin v${{ steps.release.outputs.new_release_version }}
-      
-      - name: Create GitHub Release
-        if: steps.release.outputs.new_release_published == 'true'
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
+         
+      - name: Release
+        id: release
+        # from https://github.com/cycjimmy/semantic-release-action/commits/main
+        uses: cycjimmy/semantic-release-action@0a51e81a6baff2acad3ee88f4121c589c73d0f0e # v4.2.0
         with:
-          tag_name: v${{ steps.release.outputs.new_release_version }}
-          name: Release v${{ steps.release.outputs.new_release_version }}
-          generate_release_notes: true
-          make_latest: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-          
+          semantic_version: 18.0.0
+          extra_plugins: |
+            @semantic-release/release-notes-generator@10.0.3
+            @semantic-release/git@10.0.1
