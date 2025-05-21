@@ -68,11 +68,10 @@ printf "\tRunner Name: $RUNNER_NAME\n\tAdditional args: $ADDITIONAL_ARGS\n"
 
 if [ "$INTERACTIVE" == "FALSE" ]; then
 	printf "Running in non-interactive mode\n"
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --unattended
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --disableupdate --unattended
 else
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --disableupdate
 fi
-
 # Start the runner.
 printf "Executing GitHub Runner for $GITHUB_REPOSITORY_NAME\n"
 
