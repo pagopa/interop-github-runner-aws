@@ -29,6 +29,10 @@ if [ -z "$WORK_DIR" ]; then
 	export WORK_DIR=".workdir"
 fi
 
+if [[ "$INTERACTIVE" == "FALSE" ]] || [[  "$(echo "${DISABLE_AUTO_UPDATE:-}" | tr '[:upper:]' '[:lower:]')" == "true" ]]; then
+    ADDITIONAL_ARGS="$ADDITIONAL_ARGS --disableupdate"
+fi
+
 # Calculate runner replacement policy.
 REPLACEMENT_POLICY="\n\n\n"
 REPLACEMENT_POLICY_LABEL="FALSE"
@@ -41,9 +45,9 @@ fi
 printf "Configuring GitHub Runner for $GITHUB_REPOSITORY_BANNER\n"
 printf "\tRunner Name: $RUNNER_NAME\n\tWorking Directory: $WORK_DIR\n\tReplace Existing Runners: $REPLACEMENT_POLICY_LABEL\n"
 if [ "$INTERACTIVE" == "FALSE" ]; then
-	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --work $WORK_DIR --disableupdate --unattended
+	echo -ne "$REPLACEMENT_POLICY" | . /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --work $WORK_DIR $ADDITIONAL_ARGS --unattended
 else
-	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --work $WORK_DIR --disableupdate
+	. /actions-runner/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY --token $GITHUB_TOKEN --work $WORK_DIR $ADDITIONAL_ARGS
 fi
 
 # Start the runner.
