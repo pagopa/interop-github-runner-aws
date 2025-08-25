@@ -1,5 +1,5 @@
-# runner v2.323.0: https://github.com/actions/runner/pkgs/container/actions-runner
-FROM ghcr.io/actions/actions-runner@sha256:831a2607a2618e4b79d9323b4c72330f3861768a061c2b92a845e9d214d80e5b
+# runner v2.325.0: https://github.com/actions/runner/pkgs/container/actions-runner
+FROM ghcr.io/actions/actions-runner@sha256:deb54a88ead0a86beedec6ac949e8b28f77478835b9c6434ccc237390a6e3e4f
 
 ARG KUBECTL_VERSION=1.25.16
 
