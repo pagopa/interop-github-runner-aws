@@ -62,7 +62,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:v${{ steps.release.outputs.new_release_version }}-minimal
+            ghcr.io/${{ github.repository }}:v${{ steps.release_dry_run.outputs.new_release_version }}-minimal
           labels: |
             maintainer=https://pagopa.it
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
@@ -78,7 +78,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest-full
-            ghcr.io/${{ github.repository }}:v${{ steps.release.outputs.new_release_version }}-full
+            ghcr.io/${{ github.repository }}:v${{ steps.release_dry_run.outputs.new_release_version }}-full
           labels: |
             maintainer=https://pagopa.it
             org.opencontainers.image.source=https://github.com/${{ github.repository }}

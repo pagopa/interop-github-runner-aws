@@ -45,6 +45,9 @@ fi
 if [[ -n "${WORK_DIR:-}" ]]; then
 	ADDITIONAL_ARGS="$ADDITIONAL_ARGS --work $WORK_DIR"
 fi
+if [[ "$INTERACTIVE" == "FALSE" ]] || [[  "$(echo "${DISABLE_AUTO_UPDATE:-}" | tr '[:upper:]' '[:lower:]')" == "true" ]]; then
+    ADDITIONAL_ARGS="$ADDITIONAL_ARGS --disableupdate"
+fi
 
 # Calculate default configuration values.
 GITHUB_REPOSITORY_BANNER="$GITHUB_REPOSITORY_URL"
@@ -68,9 +71,9 @@ printf "\tRunner Name: $RUNNER_NAME\n\tAdditional args: $ADDITIONAL_ARGS\n"
 
 if [ "$INTERACTIVE" == "FALSE" ]; then
 	printf "Running in non-interactive mode\n"
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --disableupdate --unattended
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --unattended
 else
-	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS --disableupdate
+	. $HOME/config.sh --name $RUNNER_NAME --url $GITHUB_REPOSITORY_URL --token $REGISTRATION_TOKEN $ADDITIONAL_ARGS
 fi
 # Start the runner.
 printf "Executing GitHub Runner for $GITHUB_REPOSITORY_NAME\n"
