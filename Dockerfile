@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y curl zip unzip jq ca-certificates curl 
 RUN mkdir actions-runner
 WORKDIR /actions-runner
 
-RUN GITHUB_RUNNER_VERSION="2.332.0" && \
-    GITHUB_RUNNER_VERSION_SHA="f2094522a6b9afeab07ffb586d1eb3f190b6457074282796c497ce7dce9e0f2a" && \
+RUN GITHUB_RUNNER_VERSION="2.333.1" && \
+    GITHUB_RUNNER_VERSION_SHA="18f8f68ed1892854ff2ab1bab4fcaa2f5abeedc98093b6cb13638991725cab74" && \
     curl -o actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz && \
     echo "${GITHUB_RUNNER_VERSION_SHA}  actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz" | sha256sum -c && \
     tar xzf ./actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz && \
